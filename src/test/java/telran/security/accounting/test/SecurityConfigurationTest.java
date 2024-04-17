@@ -1,11 +1,15 @@
 package telran.security.accounting.test;
 
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -16,7 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import telran.security.accounting.dto.Roles;
 import telran.security.accounting.dto.AccountData;
 import telran.security.accounting.model.AccountDataDoc;
-import telran.security.accounting.repo.AccountRepo;
+import telran.security.accounting.service.AccountService;
 
 
 @SpringBootTest
@@ -26,15 +30,15 @@ class SecurityConfigurationTest {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	@Autowired
-	AccountRepo accountRepo;
+	@MockBean
+	AccountService accountService;
 	
 	@Value("${app.security.user.list.url}")
 	private String userGetAllUrl;
 	@Value("${app.security.user.c.d.url}")
 	private String userCDUrl;
 	
-	String requestBody =  "{\"username\": \"username@username.il\", \"password\": \"password\", \"roles\": [\"USER\"]}";
+	String requestBody =  "{\"username\": \"username@username.il\", \"password\": \"password\", \"roles\": [\"ADMIN\", \"USER\"]}";
 	
 	String username = "username@username.il";
 	String password = "password";
@@ -98,12 +102,14 @@ class SecurityConfigurationTest {
 		String role = "ADMIN";
 		
 		String url = userCDUrl;
+		when(accountService.addAccount(accountData)).thenReturn(accountDoc.buildUR());
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(requestBody);
 		int status = getResponseStatus(request, role);
 		assertEquals(HttpStatus.FORBIDDEN.value(), status);		
 		
+		when(accountService.deleteAccount(username)).thenReturn(accountDoc.buildUR());
 		request = MockMvcRequestBuilders.delete(url + "/" + username);
 		status = getResponseStatus(request, role);
 		assertEquals(HttpStatus.FORBIDDEN.value(), status);		
@@ -121,13 +127,14 @@ class SecurityConfigurationTest {
 		String role = "SU";		
 		
 		String url = userCDUrl;
+		when(accountService.addAccount(accountData)).thenReturn(accountDoc.buildUR());
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
 				.contentType(MediaType.APPLICATION_JSON)
 		        .content(requestBody);
 		int status = getResponseStatus(request, role);
 		assertEquals(HttpStatus.OK.value(), status);
 		
-		accountRepo.save(accountDoc);
+		when(accountService.deleteAccount(username)).thenReturn(accountDoc.buildUR());
 		request = MockMvcRequestBuilders.delete(url + "/" + username);
 		status = getResponseStatus(request, role);
 		assertEquals(HttpStatus.OK.value(), status);		
@@ -138,6 +145,7 @@ class SecurityConfigurationTest {
 		status = getResponseStatus(request, role);
 		assertEquals(HttpStatus.OK.value(), status);
 	}
+
 	
 }
 
