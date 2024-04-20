@@ -1,4 +1,4 @@
-package telran.security.auth;
+package telran.security.accounting.auth;
 
 import java.util.Arrays;
 

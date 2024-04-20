@@ -6,10 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "telran")
-public class RequestBlockerAccountingManagementAppl {
+public class BlockerAccountingManagementAppl {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RequestBlockerAccountingManagementAppl.class, args);
+		SpringApplication.run(BlockerAccountingManagementAppl.class, args);
 	}
 
 }

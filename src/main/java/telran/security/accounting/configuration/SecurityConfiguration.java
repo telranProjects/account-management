@@ -1,4 +1,4 @@
-package telran.security.configuration;
+package telran.security.accounting.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,6 @@ public class SecurityConfiguration {
 				.requestMatchers(userGetAllUrl).hasRole(userSU)				
 				.anyRequest().authenticated());
 		http.httpBasic(Customizer.withDefaults());
-		http.sessionManagement(custom -> custom.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
 		return http.build();
 	}
 }
